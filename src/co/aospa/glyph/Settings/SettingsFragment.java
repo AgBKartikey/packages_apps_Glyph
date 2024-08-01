@@ -26,7 +26,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.widget.Switch;
 
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
@@ -34,11 +33,12 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
-import androidx.preference.SwitchPreference;
+import androidx.preference.SwitchPreferenceCompat;
 
 import com.android.settingslib.PrimarySwitchPreference;
 import com.android.settingslib.widget.MainSwitchPreference;
-import com.android.settingslib.widget.OnMainSwitchChangeListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import co.aospa.glyph.R;
 import co.aospa.glyph.Constants.Constants;
@@ -47,19 +47,19 @@ import co.aospa.glyph.Utils.ResourceUtils;
 import co.aospa.glyph.Utils.ServiceUtils;
 
 public class SettingsFragment extends PreferenceFragment implements OnPreferenceChangeListener,
-        OnMainSwitchChangeListener, OnSharedPreferenceChangeListener {
+        OnCheckedChangeListener, OnSharedPreferenceChangeListener {
 
     private MainSwitchPreference mSwitchBar;
 
-    private SwitchPreference mFlipPreference;
-    private SwitchPreference mAutoBrightnessPreference;
+    private SwitchPreferenceCompat mFlipPreference;
+    private SwitchPreferenceCompat mAutoBrightnessPreference;
     private SeekBarPreference mBrightnessPreference;
     private PrimarySwitchPreference mNotifsPreference;
     private PrimarySwitchPreference mCallPreference;
-    private SwitchPreference mChargingLevelPreference;
-    private SwitchPreference mChargingPowersharePreference;
-    private SwitchPreference mVolumeLevelPreference;
-    private SwitchPreference mMusicVisualizerPreference;
+    private SwitchPreferenceCompat mChargingLevelPreference;
+    private SwitchPreferenceCompat mChargingPowersharePreference;
+    private SwitchPreferenceCompat mVolumeLevelPreference;
+    private SwitchPreferenceCompat mMusicVisualizerPreference;
 
     private ContentResolver mContentResolver;
     private SettingObserver mSettingObserver;
@@ -82,11 +82,11 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
         mSwitchBar.addOnSwitchChangeListener(this);
         mSwitchBar.setChecked(glyphEnabled);
 
-        mFlipPreference = (SwitchPreference) findPreference(Constants.GLYPH_FLIP_ENABLE);
+        mFlipPreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_FLIP_ENABLE);
         mFlipPreference.setEnabled(glyphEnabled);
         mFlipPreference.setOnPreferenceChangeListener(this);
 
-        mAutoBrightnessPreference = (SwitchPreference) findPreference(Constants.GLYPH_AUTO_BRIGHTNESS_ENABLE);
+        mAutoBrightnessPreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_AUTO_BRIGHTNESS_ENABLE);
         if (ResourceUtils.getString("glyph_light_sensor").isBlank()) {
             getPreferenceScreen().removePreference(mAutoBrightnessPreference);
         }
@@ -117,19 +117,19 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
         mCallPreference.setSwitchEnabled(glyphEnabled);
         mCallPreference.setOnPreferenceChangeListener(this);
 
-        mChargingLevelPreference = (SwitchPreference) findPreference(Constants.GLYPH_CHARGING_LEVEL_ENABLE);
+        mChargingLevelPreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_CHARGING_LEVEL_ENABLE);
         mChargingLevelPreference.setEnabled(glyphEnabled);
         mChargingLevelPreference.setOnPreferenceChangeListener(this);
 
-        mChargingPowersharePreference = (SwitchPreference) findPreference(Constants.GLYPH_CHARGING_POWERSHARE_ENABLE);
+        mChargingPowersharePreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_CHARGING_POWERSHARE_ENABLE);
         mChargingPowersharePreference.setEnabled(glyphEnabled);
         mChargingPowersharePreference.setOnPreferenceChangeListener(this);
 
-        mVolumeLevelPreference = (SwitchPreference) findPreference(Constants.GLYPH_VOLUME_LEVEL_ENABLE);
+        mVolumeLevelPreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_VOLUME_LEVEL_ENABLE);
         mVolumeLevelPreference.setEnabled(glyphEnabled);
         mVolumeLevelPreference.setOnPreferenceChangeListener(this);
 
-        mMusicVisualizerPreference = (SwitchPreference) findPreference(Constants.GLYPH_MUSIC_VISUALIZER_ENABLE);
+        mMusicVisualizerPreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_MUSIC_VISUALIZER_ENABLE);
         mMusicVisualizerPreference.setEnabled(glyphEnabled);
         mMusicVisualizerPreference.setOnPreferenceChangeListener(this);
         if (mMusicVisualizerPreference.isChecked()) {
@@ -182,7 +182,7 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
     }
 
     @Override
-    public void onSwitchChanged(Switch switchView, boolean isChecked) {
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         SettingsManager.enableGlyph(isChecked);
 
         mSwitchBar.setChecked(isChecked);
